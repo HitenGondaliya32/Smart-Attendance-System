@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="/static/style.css">
+
+<div class="card">
+    <h2>🔐 Admin Login</h2>
+
+    <form method="POST" action="/admin-auth">
+        <input type="password" name="password" placeholder="Enter Password">
+        <button class="btn">Login</button>
+    </form>
+</div>
+
+<div id="toast" class="toast"></div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      let msg = "{{ messages[0] }}";
+      let toast = document.getElementById("toast");
+
+      toast.innerText = msg;
+      toast.classList.add("show");
+
+      setTimeout(()=>{
+        toast.classList.remove("show");
+        toast.classList.add("hide");
+      },3000);
+    </script>
+  {% endif %}
+{% endwith %}

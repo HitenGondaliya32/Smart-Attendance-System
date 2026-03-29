@@ -1,0 +1,89 @@
+<link rel="stylesheet" href="/static/style.css">
+
+<div id="toast" class="toast"></div>
+
+<div class="card">
+<h2>Register</h2>
+
+<video id="video" width="400" height="300" autoplay></video><br><br>
+
+<button class="btn" onclick="capture()">Capture</button>
+
+<form method="POST" action="/register_user" onsubmit="return validateForm()">
+<input type="text" name="name" placeholder="Enter Name">
+<input type="hidden" name="image" id="image">
+<button class="btn">Submit</button>
+</form>
+
+</div>
+
+<script>
+let video = document.getElementById("video");
+
+// 🎥 Camera
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => video.srcObject = stream);
+
+// 📸 Capture
+function capture(){
+    let canvas = document.createElement("canvas");
+    canvas.width = 400;
+    canvas.height = 300;
+
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, 400, 300);
+
+    document.getElementById("image").value = canvas.toDataURL();
+
+    showToast("📸 Face Captured Successfully", false);
+}
+
+// ✅ Validation
+function validateForm(){
+    let name = document.querySelector('input[name="name"]').value;
+    let image = document.getElementById("image").value;
+
+    if(name.trim() === ""){
+        showToast("❌ Please enter name", true);
+        return false;
+    }
+
+    if(image === ""){
+        showToast("❌ Please capture face first", true);
+        return false;
+    }
+
+    showToast("✅ Registering...", false);
+    return true;
+}
+
+// 🔥 Toast
+function showToast(message, isError){
+    let toast = document.getElementById("toast");
+
+    toast.innerText = message;
+
+    if(isError){
+        toast.classList.add("error");
+    } else {
+        toast.classList.remove("error");
+    }
+
+    toast.classList.remove("hide");
+
+    setTimeout(()=> toast.classList.add("show"),100);
+
+    setTimeout(()=>{
+        toast.classList.remove("show");
+        toast.classList.add("hide");
+    },3000);
+}
+</script>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      showToast("{{ messages[0] }}", "{{ messages[0] }}".includes("❌"));
+    </script>
+  {% endif %}
+{% endwith %}

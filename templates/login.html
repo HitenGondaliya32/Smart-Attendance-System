@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="/static/style.css">
+
+<div id="toast" class="toast"></div>
+
+<div class="card">
+<h2>Login</h2>
+
+<video id="video" width="400" height="300" autoplay></video><br><br>
+
+<button class="btn" onclick="capture()">Verify Face</button>
+
+<form method="POST" action="/verify">
+<input type="hidden" name="image" id="image">
+</form>
+
+</div>
+
+<script>
+let video = document.getElementById("video");
+
+// 🎥 Camera
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => video.srcObject = stream);
+
+// 📸 Capture + Submit
+function capture(){
+    let canvas = document.createElement("canvas");
+    canvas.width = 400;
+    canvas.height = 300;
+
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, 400, 300);
+
+    document.getElementById("image").value = canvas.toDataURL();
+
+    showToast("📸 Capturing Face...", false);
+
+    setTimeout(()=>{
+        document.forms[0].submit();
+    },500);
+}
+
+// 🔥 Toast
+function showToast(message, isError){
+    let toast = document.getElementById("toast");
+
+    toast.innerText = message;
+
+    if(isError){
+        toast.classList.add("error");
+    } else {
+        toast.classList.remove("error");
+    }
+
+    toast.classList.remove("hide");
+
+    setTimeout(()=> toast.classList.add("show"),100);
+
+    setTimeout(()=>{
+        toast.classList.remove("show");
+        toast.classList.add("hide");
+    },3000);
+}
+</script>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      showToast("{{ messages[0] }}", "{{ messages[0] }}".includes("❌"));
+    </script>
+  {% endif %}
+{% endwith %}

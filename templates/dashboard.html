@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="/static/style.css">
+
+<div class="container">
+
+<h2 class="title">📊 Dashboard</h2>
+
+<div class="stats">
+<div>Total: {{ total }}</div>
+<div>Present: {{ present_count }}</div>
+<div>Absent: {{ absent|length }}</div>
+</div>
+
+<!-- 🔐 ADMIN ONLY -->
+{% if is_admin %}
+
+<form method="GET" style="text-align:center;">
+<input type="date" name="date">
+<button class="btn">Filter</button>
+</form>
+
+<div style="text-align:center;">
+<a href="/download">
+<button class="btn">Download CSV</button>
+</a>
+</div>
+
+{% endif %}
+
+<div class="dashboard">
+
+<div class="table-box">
+<table>
+<tr>
+<th>No</th>
+<th>Name</th>
+<th>Date</th>
+<th>Time</th>
+</tr>
+
+{% for row in data %}
+<tr>
+<td>{{ row[0] }}</td>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>{{ row[3] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="absent-box">
+<h3>❌ Absent</h3>
+<ul>
+{% for user in absent %}
+<li>{{ user }}</li>
+{% endfor %}
+</ul>
+</div>
+
+</div>
+</div>
